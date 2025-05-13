@@ -1,36 +1,6 @@
 ```python
 
 
-def broadcat(tensors, dim = -1):
-    broadcasted_tensors = broadcast_tensors(*tensors)
-    return torch.cat(broadcasted_tensors, dim = dim)
-
-def attention_mask(sequence_length, attention_type="full"):
-    """
-    Create an attention mask dynamically for a single sequence.
-    Args:
-        sequence_length (int): Length of the sequence.
-        attention_type (str): Type of attention ("full", "causal", "sliding").
-    Returns:
-        torch.Tensor: The generated attention mask.
-    """
-    rows = []
-    for i in range(sequence_length):
-        row = torch.zeros(sequence_length)
-        if attention_type == "full":
-            row[:] = 1  # Full attention
-        elif attention_type == "causal":
-            row[:i + 1] = 1  # Causal attention
-        elif attention_type == "sliding":
-            window_size = 2
-            start = max(0, i - window_size)
-            end = min(sequence_length, i + window_size + 1)
-            row[start:end] = 1  # Sliding window attention
-        rows.append(row.unsqueeze(0))
-
-    # Combine rows into a full mask
-    return broadcat(rows, dim=0)
-
     class MyelinatedLayer(BaseAttention):
         def __init__(self, dims, head, layerAs=6, sparsity_threshold=0.1):
             super().__init__()
